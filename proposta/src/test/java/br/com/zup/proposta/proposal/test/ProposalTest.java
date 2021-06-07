@@ -58,7 +58,6 @@ public class ProposalTest {
 				.setParameter("document", request.getDocument()).getResultList();
 		
 		Assertions.assertTrue(proposal.size() == 1);
-		
 		Assertions.assertAll(() -> assertEquals(proposal.get(0).getName(), request.getName()),
 				() -> assertEquals(proposal.get(0).getEmail(), request.getEmail()),
 				() -> assertEquals(proposal.get(0).getAdress(), request.getAdress()),

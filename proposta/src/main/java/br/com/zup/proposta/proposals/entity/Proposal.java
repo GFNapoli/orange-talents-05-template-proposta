@@ -10,7 +10,14 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 
+import org.springframework.http.HttpStatus;
+
 import com.sun.istack.NotNull;
+
+import br.com.zup.proposta.client.dto.SolicitationIn;
+import br.com.zup.proposta.client.dto.SolicitationOut;
+import br.com.zup.proposta.exception.ProposalRequestException;
+import br.com.zup.proposta.proposals.status.StatusProposal;
 
 @Entity
 public class Proposal {
@@ -35,6 +42,7 @@ public class Proposal {
 	@NotNull
 	@Positive
 	private BigDecimal salary;
+	private StatusProposal status = StatusProposal.NAO_ELEGIVEL;
 
 	public Proposal() {
 	}
@@ -70,5 +78,25 @@ public class Proposal {
 
 	public BigDecimal getSalary() {
 		return salary;
+	}
+	
+	public StatusProposal getStatus() {
+		return status;
+	}
+
+	public SolicitationOut solicitation() {
+		
+		return new SolicitationOut(document, name, String.valueOf(id));
+	}
+
+	public void attStatus(SolicitationIn status) {
+		
+		if(status.getResultadoSolicitacao().equalsIgnoreCase("SEM_RESTRICAO")) {
+			this.status = StatusProposal.ELEGIVEL;
+		}else if(status.getResultadoSolicitacao().equalsIgnoreCase("COM_RESTRICAO")) {
+			return;
+		}else {
+			throw new ProposalRequestException("Status da solicitação não compativel", HttpStatus.BAD_GATEWAY);
+		}
 	}
 }
