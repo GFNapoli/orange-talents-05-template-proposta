@@ -9,12 +9,14 @@ import javax.validation.constraints.Positive;
 import com.sun.istack.NotNull;
 
 import br.com.zup.proposta.annotation.DocumentValidation;
+import br.com.zup.proposta.annotation.Unique;
 import br.com.zup.proposta.proposals.entity.Proposal;
 
 public class ProposalForm {
 
 	@NotBlank
 	@DocumentValidation
+	@Unique(domainClass = Proposal.class, fieldName = "document")
 	private String document;
 	
 	@NotBlank

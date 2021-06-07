@@ -65,4 +65,24 @@ public class ProposalTest {
 				() -> assertEquals(proposal.get(0).getDocument(), request.getDocument()),
 				() -> assertEquals(proposal.get(0).getSalary(), request.getSalary()));
 	}
+	
+	@Test
+	public void daveApenasExistirUmaProposatPorCliente() throws Exception {
+		
+		ProposalRequestTest request = new ProposalRequestTest("41126609013", "lucaslhc@gmail.com", "Lucas Henrrique", "rua coronel 2290", new BigDecimal(10000.00));
+		String requestJson = json(request);
+		
+		mockMvc.perform(MockMvcRequestBuilders.post("/proposal/new").contentType(MediaType.APPLICATION_JSON)
+				.content(requestJson))
+			.andExpect(MockMvcResultMatchers.status().isCreated());
+		
+		mockMvc.perform(MockMvcRequestBuilders.post("/proposal/new").contentType(MediaType.APPLICATION_JSON)
+				.content(requestJson))
+			.andExpect(MockMvcResultMatchers.status().isUnprocessableEntity());
+		
+		List<Proposal> proposal = manager.createQuery("from Proposal where document = :document", Proposal.class)
+				.setParameter("document", request.getDocument()).getResultList();
+		
+		Assertions.assertTrue(proposal.size() == 1);
+	}
 }
