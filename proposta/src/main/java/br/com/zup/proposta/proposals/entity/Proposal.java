@@ -14,6 +14,8 @@ import org.springframework.http.HttpStatus;
 
 import com.sun.istack.NotNull;
 
+import br.com.zup.proposta.client.dto.ApiNewCardIn;
+import br.com.zup.proposta.client.dto.ApiNewCardOut;
 import br.com.zup.proposta.client.dto.SolicitationIn;
 import br.com.zup.proposta.client.dto.SolicitationOut;
 import br.com.zup.proposta.exception.ProposalRequestException;
@@ -43,6 +45,7 @@ public class Proposal {
 	@Positive
 	private BigDecimal salary;
 	private StatusProposal status = StatusProposal.NAO_ELEGIVEL;
+	private String idCard = null;
 
 	public Proposal() {
 	}
@@ -83,6 +86,10 @@ public class Proposal {
 	public StatusProposal getStatus() {
 		return status;
 	}
+	
+	public String getIdCard() {
+		return idCard;
+	}
 
 	public SolicitationOut solicitation() {
 		
@@ -98,5 +105,13 @@ public class Proposal {
 		}else {
 			throw new ProposalRequestException("Status da solicitação não compativel", HttpStatus.BAD_GATEWAY);
 		}
+	}
+
+	public ApiNewCardOut reqCard() {
+		return new ApiNewCardOut(document, name, String.valueOf(id));
+	}
+	
+	public void addCard(ApiNewCardIn newCard) {
+		this.idCard = newCard.getIdCard();
 	}
 }
