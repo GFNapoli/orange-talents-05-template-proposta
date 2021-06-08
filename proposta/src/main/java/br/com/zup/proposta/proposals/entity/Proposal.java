@@ -19,6 +19,7 @@ import br.com.zup.proposta.client.dto.ApiNewCardOut;
 import br.com.zup.proposta.client.dto.SolicitationIn;
 import br.com.zup.proposta.client.dto.SolicitationOut;
 import br.com.zup.proposta.exception.ProposalRequestException;
+import br.com.zup.proposta.proposals.dto.ProposalDto;
 import br.com.zup.proposta.proposals.status.StatusProposal;
 
 @Entity
@@ -113,5 +114,9 @@ public class Proposal {
 	
 	public void addCard(ApiNewCardIn newCard) {
 		this.idCard = newCard.getIdCard();
+	}
+	
+	public ProposalDto proposalOut() {
+		return new ProposalDto(document, email, name, adress, salary, status, idCard);
 	}
 }

@@ -2,6 +2,7 @@ package br.com.zup.proposta.proposal.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.awt.print.Printable;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -83,5 +84,23 @@ public class ProposalTest {
 				.setParameter("document", request.getDocument()).getResultList();
 		
 		Assertions.assertTrue(proposal.size() == 1);
+	}
+	
+	@Test
+	public void deveConsultarOsDadosDoCliente() throws Exception {
+		
+		ProposalRequestTest request = new ProposalRequestTest("41126609013", "lucaslhc@gmail.com", "Lucas Henrrique", "rua coronel 2290", new BigDecimal(10000.00));
+		String requestJson = json(request);
+		
+		mockMvc.perform(MockMvcRequestBuilders.post("/proposal/new").contentType(MediaType.APPLICATION_JSON)
+				.content(requestJson))
+			.andExpect(MockMvcResultMatchers.status().isCreated());
+		
+		Proposal proposal = manager.createQuery("from Proposal where document = :document", Proposal.class)
+				.setParameter("document", request.getDocument()).getSingleResult();
+		
+		mockMvc.perform(MockMvcRequestBuilders.get("/proposal/"+proposal.getId()))
+		.andExpect(MockMvcResultMatchers.status().isOk());
+		
 	}
 }
