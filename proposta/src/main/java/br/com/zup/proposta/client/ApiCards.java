@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import br.com.zup.proposta.client.dto.ApiNewCardIn;
 import br.com.zup.proposta.client.dto.ApiNewCardOut;
 
-@FeignClient(name = "cards", url = "http://localhost:8888/api")
+@FeignClient(name = "cards", url = "${cartoes.host}")
 public interface ApiCards {
 
 	@PostMapping("/cartoes")

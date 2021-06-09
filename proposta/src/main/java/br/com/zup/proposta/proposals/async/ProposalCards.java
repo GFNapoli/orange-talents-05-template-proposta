@@ -23,7 +23,7 @@ public class ProposalCards {
 	@Autowired
 	private ApiCards apiCards;
 	
-	@Scheduled(fixedDelay = 1000)
+	@Scheduled(fixedDelayString = "${time.assync}")
 	private void proposalCards() {
 		
 		List<Proposal> proposals = repository.findByStatusAndIdCard(StatusProposal.ELEGIVEL, null);
