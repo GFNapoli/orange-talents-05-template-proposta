@@ -138,11 +138,27 @@ services:
     image: postgres:9.6
     ports:
       - "666:5432"
+    networks:
+      - production-network
     environment:
       - POSTGRES_DB=proposta_cartao
       - POSTGRES_USER=gustavo
       - POSTGRES_PASSWORD=12345678
       - MAX_CONNECTIONS=300
+
+  proposal:
+    build: .
+    ports:
+      - "8080:8080"
+    networks: 
+      - production-network
+
+    depends_on:
+      - db
+
+networks:
+  production-network:
+    driver: bridge
 
 volumes:
   grafana-volume:
