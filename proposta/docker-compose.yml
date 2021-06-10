@@ -146,15 +146,15 @@ services:
       - POSTGRES_PASSWORD=12345678
       - MAX_CONNECTIONS=300
 
-  proposal:
-    build: .
-    ports:
-      - "8080:8080"
-    networks: 
-      - production-network
-
-    depends_on:
-      - db
+#  proposal:
+#    build: .
+#    ports:
+#      - "8080:8080"
+#    networks: 
+#      - production-network
+#
+#    depends_on:
+#      - db
 
 networks:
   production-network:

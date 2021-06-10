@@ -4,8 +4,8 @@ import java.math.BigDecimal;
 
 public class ProposalRequestTest {
 
-	private String document;
 	private String email;
+	private String document;
 	private String name;
 	private String adress;
 	private BigDecimal salary;

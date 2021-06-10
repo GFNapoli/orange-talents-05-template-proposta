@@ -2,10 +2,12 @@ package br.com.zup.proposta.proposals.entity;
 
 import java.math.BigDecimal;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
@@ -14,6 +16,7 @@ import org.springframework.http.HttpStatus;
 
 import com.sun.istack.NotNull;
 
+import br.com.zup.proposta.card.entity.Card;
 import br.com.zup.proposta.client.dto.ApiNewCardIn;
 import br.com.zup.proposta.client.dto.ApiNewCardOut;
 import br.com.zup.proposta.client.dto.SolicitationIn;
@@ -46,7 +49,9 @@ public class Proposal {
 	@Positive
 	private BigDecimal salary;
 	private StatusProposal status = StatusProposal.NAO_ELEGIVEL;
-	private String idCard = null;
+	
+	@OneToOne(mappedBy = "proposal", cascade = CascadeType.MERGE)
+	private Card card;
 
 	public Proposal() {
 	}
@@ -88,8 +93,8 @@ public class Proposal {
 		return status;
 	}
 	
-	public String getIdCard() {
-		return idCard;
+	public Card getCard() {
+		return card;
 	}
 
 	public SolicitationOut solicitation() {
@@ -113,10 +118,10 @@ public class Proposal {
 	}
 	
 	public void addCard(ApiNewCardIn newCard) {
-		this.idCard = newCard.getIdCard();
+		this.card = newCard.tomodel(this);
 	}
 	
 	public ProposalDto proposalOut() {
-		return new ProposalDto(document, email, name, adress, salary, status, idCard);
+		return new ProposalDto(document, email, name, adress, salary, status, card);
 	}
 }

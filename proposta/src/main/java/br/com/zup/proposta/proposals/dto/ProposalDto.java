@@ -2,6 +2,7 @@ package br.com.zup.proposta.proposals.dto;
 
 import java.math.BigDecimal;
 
+import br.com.zup.proposta.card.entity.Card;
 import br.com.zup.proposta.proposals.status.StatusProposal;
 
 public class ProposalDto {
@@ -12,20 +13,20 @@ public class ProposalDto {
 	private String adress;
 	private BigDecimal salary;
 	private StatusProposal status;
-	private String idCard;
+	private String card;
 	
 	public ProposalDto() {
 	}
 
 	public ProposalDto(String document, String email, String name, String adress, BigDecimal salary,
-			StatusProposal status, String idCard) {
+			StatusProposal status, Card card) {
 		this.document = document;
 		this.email = email;
 		this.name = name;
 		this.adress = adress;
 		this.salary = salary;
 		this.status = status;
-		this.idCard = idCard;
+		this.card = card.getCardNumber();
 	}
 
 	public String getDocument() {
@@ -52,8 +53,8 @@ public class ProposalDto {
 		return status;
 	}
 
-	public String getIdCard() {
-		return idCard;
+	public String getCard() {
+		return card;
 	}
 	
 }

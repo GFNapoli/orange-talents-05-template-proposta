@@ -1,6 +1,7 @@
 package br.com.zup.proposta.proposal.test;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -23,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import br.com.zup.proposta.client.ApiCards;
 import br.com.zup.proposta.client.dto.ApiNewCardIn;
 import br.com.zup.proposta.client.dto.ApiNewCardOut;
+import br.com.zup.proposta.dto.BiometryTest;
 import br.com.zup.proposta.dto.ProposalRequestTest;
 import br.com.zup.proposta.proposals.entity.Proposal;
 import br.com.zup.proposta.proposals.repository.ProposalRepository;
@@ -53,10 +55,13 @@ public class ProposalAsync {
 	private String json(ProposalRequestTest proposal) throws JsonProcessingException {
 		return jsonMaper.writeValueAsString(proposal);
 	}
+	private String jsonB(BiometryTest test) throws JsonProcessingException {
+		return jsonMaper.writeValueAsString(test);
+	}
 	
 	private void proposalCards() {
 		
-		List<Proposal> proposals = repository.findByStatusAndIdCard(StatusProposal.ELEGIVEL, null);
+		List<Proposal> proposals = repository.findByStatusAndCard(StatusProposal.ELEGIVEL, null);
 		
 		if(proposals.isEmpty()) return;
 		
@@ -92,7 +97,35 @@ public class ProposalAsync {
 		Proposal proposal = manager.createQuery("from Proposal where document = :document", Proposal.class)
 				.setParameter("document", request.getDocument()).getSingleResult();
 		
-		Assertions.assertNotEquals(proposal.getIdCard(), null);
+		Assertions.assertNotEquals(proposal.getCard(), null);
 		
+	}
+	
+	@Test
+	public void deveAddUmaBiometria() throws Exception {
+		
+		ProposalRequestTest request = new ProposalRequestTest("41126609013", "lucaslhc@gmail.com", "Lucas Henrrique", "rua coronel 2290", new BigDecimal(10000.00));
+		String requestJson = json(request);
+		
+		mockMvc.perform(MockMvcRequestBuilders.post("/proposal/new").contentType(MediaType.APPLICATION_JSON)
+				.content(requestJson))
+			.andExpect(MockMvcResultMatchers.status().isCreated());
+		
+		proposalCards();
+		
+		Proposal proposal = manager.createQuery("from Proposal where document = :document", Proposal.class)
+				.setParameter("document", request.getDocument()).getSingleResult();
+		
+		Assertions.assertNotEquals(proposal.getCard(), null);
+		
+		List<String> bio = new ArrayList<>();
+		bio.add("a5sa$g#");
+		bio.add("2ot&ti$fk88");
+		BiometryTest biometryRequest = new BiometryTest(bio);
+		String biorequest = jsonB(biometryRequest);
+		
+		mockMvc.perform(MockMvcRequestBuilders.post("/card/biometry/"+proposal.getCard().getCardNumber())
+				.contentType(MediaType.APPLICATION_JSON).content(biorequest))
+		.andExpect(MockMvcResultMatchers.status().isOk());
 	}
 }

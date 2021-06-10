@@ -26,7 +26,7 @@ public class ProposalCards {
 	@Scheduled(fixedDelayString = "${time.assync}")
 	private void proposalCards() {
 		
-		List<Proposal> proposals = repository.findByStatusAndIdCard(StatusProposal.ELEGIVEL, null);
+		List<Proposal> proposals = repository.findByStatusAndCard(StatusProposal.ELEGIVEL, null);
 		
 		if(proposals.isEmpty()) return;
 		

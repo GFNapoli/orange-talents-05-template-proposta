@@ -2,7 +2,6 @@ package br.com.zup.proposta.proposal.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.awt.print.Printable;
 import java.math.BigDecimal;
 import java.util.List;
 
