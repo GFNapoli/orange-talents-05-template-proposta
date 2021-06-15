@@ -48,7 +48,6 @@ public class ProposalController {
 		manager.persist(proposal);
 		
 		URI proposalUri = uriBuilder.path("/proposal/{id}").build(proposal.getId());
-		
 		return ResponseEntity.created(proposalUri).build();
 	}
 	
@@ -57,7 +56,7 @@ public class ProposalController {
 		
 		Proposal proposal = repository.findById(id).orElseThrow(
 				() -> new ProposalRequestException("Proposta não encontrada!", HttpStatus.NOT_FOUND));
-		
+
 		return ResponseEntity.ok(proposal.proposalOut());
 	}
 }

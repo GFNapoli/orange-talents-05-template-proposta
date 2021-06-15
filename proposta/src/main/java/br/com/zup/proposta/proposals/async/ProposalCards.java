@@ -31,13 +31,11 @@ public class ProposalCards {
 		if(proposals.isEmpty()) return;
 		
 		for (Proposal proposal : proposals) {
-			System.out.println(proposal.getName());
 			ApiNewCardOut card = proposal.reqCard();
 			
 			try {
 				
 				ApiNewCardIn nCard = apiCards.newCard(card);
-				System.out.println(nCard.getIdCard());
 				proposal.addCard(nCard);
 				
 			} catch (FeignException e) {

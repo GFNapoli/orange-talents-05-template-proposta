@@ -1,5 +1,6 @@
 package br.com.zup.proposta.card.entity;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,6 +36,11 @@ public class Card {
 	@NotNull
 	private String cardNumber;
 	
+	private Boolean blocked = false;
+	private LocalDateTime blockDate = null;
+	private String whichIpBlocked;
+	private String whichUserBlocked;
+	
 	public Card() {
 	}
 
@@ -59,8 +65,31 @@ public class Card {
 		return proposal;
 	}
 
+	public LocalDateTime getBlockDate() {
+		return blockDate;
+	}
+
+	public String getWhichIpBlocked() {
+		return whichIpBlocked;
+	}
+
+	public String getWhichUserBlocked() {
+		return whichUserBlocked;
+	}
+
+	public Boolean getBlocked() {
+		return blocked;
+	}
+
 	public void addBiometry(BiometryForm biometryForm) {
 		this.biometry.addAll(biometryForm.getBiometry()
 				.stream().map(bio -> new Biometry(bio, this)).collect(Collectors.toList()));
+	}
+
+	public void blockCard(String user, String ip) {
+		this.whichIpBlocked = ip;
+		this.whichUserBlocked = user;
+		this.blockDate = LocalDateTime.now();
+		this.blocked = true;
 	}
 }
