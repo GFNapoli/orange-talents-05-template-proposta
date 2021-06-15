@@ -40,7 +40,6 @@ public class ProposalTest {
 	@Autowired
 	EntityManager manager;
 	
-	
 	private String json(ProposalRequestTest proposal) throws JsonProcessingException {
 		return jsonMaper.writeValueAsString(proposal);
 	}
