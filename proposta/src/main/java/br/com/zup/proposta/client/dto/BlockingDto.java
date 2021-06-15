@@ -2,13 +2,13 @@ package br.com.zup.proposta.client.dto;
 
 public class BlockingDto {
 
-	private String sistemaReponsavel = "Sistema Proposatas";
+	private String sistemaResponsavel = "Sistema Proposatas";
 
 	public BlockingDto() {
 	}
 
-	public String getSistemaReponsavel() {
-		return sistemaReponsavel;
+	public String getsistemaResponsavel() {
+		return sistemaResponsavel;
 	}
 	
 }

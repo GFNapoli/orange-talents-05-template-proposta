@@ -69,7 +69,6 @@ public class CardController {
 		String ip = request.getHeader("X-FORWARDED-FOR");
 		if(ip == null) ip = request.getLocalAddr();
 		
-		//pegar user
 		String user = request.getHeader("USER-FOR");
 		
 		card.blockCard(user, ip);
