@@ -29,6 +29,9 @@ public class Card {
 	@OneToMany(mappedBy = "card", cascade = CascadeType.MERGE)
 	private List<Biometry> biometry = new ArrayList<Biometry>();
 	
+	@OneToMany(mappedBy = "card", cascade = CascadeType.MERGE)
+	private List<Travel> travels = new ArrayList<Travel>();
+	
 	@OneToOne
 	private Proposal proposal;
 	
@@ -81,6 +84,10 @@ public class Card {
 		return blocked;
 	}
 
+	public List<Travel> getTravels() {
+		return travels;
+	}
+
 	public void addBiometry(BiometryForm biometryForm) {
 		this.biometry.addAll(biometryForm.getBiometry()
 				.stream().map(bio -> new Biometry(bio, this)).collect(Collectors.toList()));
@@ -91,5 +98,9 @@ public class Card {
 		this.whichUserBlocked = user;
 		this.blockDate = LocalDateTime.now();
 		this.blocked = true;
+	}
+	
+	public void addTravel(Travel travel) {
+		this.travels.add(travel);
 	}
 }

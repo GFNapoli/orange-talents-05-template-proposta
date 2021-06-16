@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.zup.proposta.card.entity.Card;
 import br.com.zup.proposta.card.form.BiometryForm;
+import br.com.zup.proposta.card.form.TravelForm;
 import br.com.zup.proposta.card.repository.CardRepository;
 import br.com.zup.proposta.client.ApiCards;
 import br.com.zup.proposta.client.dto.BlockInDto;
@@ -69,10 +70,27 @@ public class CardController {
 		String ip = request.getHeader("X-FORWARDED-FOR");
 		if(ip == null) ip = request.getLocalAddr();
 		
-		String user = request.getHeader("USER-FOR");
+		String user = request.getHeader("USER-AGENT");
 		
 		card.blockCard(user, ip);
 		
+		return ResponseEntity.ok().build();
+	}
+	
+	@PostMapping("/travel/{cardNumber}")
+	@Transactional
+	public ResponseEntity<?> tripNotice(@PathVariable String cardNumber, @RequestBody @Valid TravelForm form, HttpServletRequest request){
+		
+		Card card = repository.findByCardNumber(cardNumber).orElseThrow(
+				() -> new ProposalRequestException("Cartão não cadastrado!", HttpStatus.BAD_REQUEST));
+		
+		String ip = request.getHeader("X-FORWARDED-FOR");
+		if(ip == null) ip = request.getLocalAddr();
+		
+		String user = request.getHeader("USER-AGENT");
+		
+		card.addTravel(form.toModel(ip, user, card));
+		repository.save(card);
 		return ResponseEntity.ok().build();
 	}
 }
