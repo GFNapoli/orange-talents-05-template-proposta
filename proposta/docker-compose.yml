@@ -110,6 +110,7 @@ services:
   prometheus:
     image: prom/prometheus
     volumes:
+     - ./prometheus.yml:/etc/prometheus/prometheus.yml
      - prometheus-volume:/etc/prometheus/
     network_mode: bridge
     ports:
@@ -138,23 +139,28 @@ services:
     image: postgres:9.6
     ports:
       - "666:5432"
-    networks:
-      - production-network
     environment:
-      - POSTGRES_DB=proposta_cartao
-      - POSTGRES_USER=gustavo
-      - POSTGRES_PASSWORD=12345678
-      - MAX_CONNECTIONS=300
+      POSTGRES_DB: proposta_cartao
+      POSTGRES_USER: gustavo
+      POSTGRES_PASSWORD: 12345678
+      MAX_CONNECTIONS: 300
 
-#  proposal:
-#    build: .
-#    ports:
-#      - "8080:8080"
-#    networks: 
-#      - production-network
-#
-#    depends_on:
-#      - db
+  proposal:
+    build: .
+    ports:
+      - "8081:8080"
+    depends_on:
+      - db
+      - prometheus
+      - keycloak
+    environment:
+      DATASOURCE_URL: jdbc:postgresql://db:5432/postgres
+      DATASOURCE_USER: gustavo
+      DATASOURCE_PSW: 12345678
+      CARTOES_URL: http://contas:8888/api
+      SOLICITACAO_URL: http://analise:9999/api
+      KEYCLOAK_ISSUER_URI: http://keycloak:8080/auth/realms/nosso-cartao
+      KEYCLOAK_JWKS_URI: http://keycloack:8080/auth/realms/nosso-cartao/protocol/openid-connect/certs
 
 networks:
   production-network:
