@@ -1,10 +1,10 @@
 package br.com.zup.proposta.client.dto;
 
-public class BlockInDto {
+public class CartaoResouceInDto {
 
 	private String resultado;
 
-	public BlockInDto() {
+	public CartaoResouceInDto() {
 	}
 
 	public String getResultado() {

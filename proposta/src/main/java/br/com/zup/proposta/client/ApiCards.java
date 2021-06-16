@@ -7,7 +7,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import br.com.zup.proposta.client.dto.ApiNewCardIn;
 import br.com.zup.proposta.client.dto.ApiNewCardOut;
 import br.com.zup.proposta.client.dto.BlockingDto;
-import br.com.zup.proposta.client.dto.BlockInDto;
+import br.com.zup.proposta.client.dto.CartaoResouceInDto;
+import br.com.zup.proposta.client.dto.TravelOutDto;
 
 @FeignClient(name = "cards", url = "${cartoes.host}")
 public interface ApiCards {
@@ -16,5 +17,8 @@ public interface ApiCards {
 	ApiNewCardIn newCard(ApiNewCardOut apiNewCardOut);
 	
 	@PostMapping("/cartoes/{cardNumber}/bloqueios")
-	BlockInDto blockCard(@PathVariable String cardNumber, BlockingDto block);
+	CartaoResouceInDto blockCard(@PathVariable String cardNumber, BlockingDto block);
+	
+	@PostMapping("/cartoes/{cardNumber}/avisos")
+	CartaoResouceInDto travelNotice(@PathVariable String cardNumber, TravelOutDto travelOutDto);
 }

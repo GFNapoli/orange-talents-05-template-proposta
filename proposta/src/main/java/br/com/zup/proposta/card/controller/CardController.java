@@ -18,7 +18,8 @@ import br.com.zup.proposta.card.form.BiometryForm;
 import br.com.zup.proposta.card.form.TravelForm;
 import br.com.zup.proposta.card.repository.CardRepository;
 import br.com.zup.proposta.client.ApiCards;
-import br.com.zup.proposta.client.dto.BlockInDto;
+import br.com.zup.proposta.client.dto.CartaoResouceInDto;
+import br.com.zup.proposta.client.dto.TravelOutDto;
 import br.com.zup.proposta.client.dto.BlockingDto;
 import br.com.zup.proposta.exception.ProposalRequestException;
 import feign.FeignException;
@@ -53,7 +54,7 @@ public class CardController {
 	@Transactional
 	public ResponseEntity<?> blockCard(@PathVariable String cardNumber, HttpServletRequest request){
 		
-		BlockInDto blocking;
+		CartaoResouceInDto blocking;
 		Card card = repository.findByCardNumber(cardNumber).orElseThrow(
 				() -> new ProposalRequestException("Cartão não cadastrado!", HttpStatus.NOT_FOUND));
 		
@@ -65,12 +66,13 @@ public class CardController {
 			throw new ProposalRequestException(e.getMessage(), HttpStatus.BAD_GATEWAY);
 		}
 		
-		if(!blocking.getResultado().equalsIgnoreCase("BLOQUEADO")) throw new ProposalRequestException("Erro no retorno da api cartoes, resultado enviado: "+blocking.getResultado(), null);
+		if(!blocking.getResultado().equalsIgnoreCase("BLOQUEADO")) 
+			throw new ProposalRequestException("Erro no retorno da api cartoes, resultado enviado: "+blocking.getResultado(), null);
 		
 		String ip = request.getHeader("X-FORWARDED-FOR");
 		if(ip == null) ip = request.getLocalAddr();
 		
-		String user = request.getHeader("USER-AGENT");
+		String user = request.getHeader("User-Agent");
 		
 		card.blockCard(user, ip);
 		
@@ -84,10 +86,22 @@ public class CardController {
 		Card card = repository.findByCardNumber(cardNumber).orElseThrow(
 				() -> new ProposalRequestException("Cartão não cadastrado!", HttpStatus.BAD_REQUEST));
 		
+		TravelOutDto travelOut = new TravelOutDto(form.getDestiny(), form.getEndOfTrip());
+		CartaoResouceInDto cartaoResourece;
+		
+		try {
+			cartaoResourece = apiCards.travelNotice(cardNumber, travelOut);
+		} catch (FeignException e) {
+			throw new ProposalRequestException(e.getMessage(), HttpStatus.BAD_GATEWAY);
+		}
+		
+		if(!cartaoResourece.getResultado().equalsIgnoreCase("CRIADO")) 
+			throw new ProposalRequestException("Resultado inesperado na requisição legado, mensagem recebida : "+cartaoResourece.getResultado(), HttpStatus.BAD_GATEWAY);
+		
 		String ip = request.getHeader("X-FORWARDED-FOR");
 		if(ip == null) ip = request.getLocalAddr();
 		
-		String user = request.getHeader("USER-AGENT");
+		String user = request.getHeader("User-Agent");
 		
 		card.addTravel(form.toModel(ip, user, card));
 		repository.save(card);
