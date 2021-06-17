@@ -32,6 +32,9 @@ public class Card {
 	@OneToMany(mappedBy = "card", cascade = CascadeType.MERGE)
 	private List<Travel> travels = new ArrayList<Travel>();
 	
+	@OneToMany(mappedBy = "card", cascade = CascadeType.MERGE)
+	private List<Wallet> wallet = new ArrayList<Wallet>();
+	
 	@OneToOne
 	private Proposal proposal;
 	
@@ -88,6 +91,10 @@ public class Card {
 		return travels;
 	}
 
+	public List<Wallet> getWallet() {
+		return wallet;
+	}
+
 	public void addBiometry(BiometryForm biometryForm) {
 		this.biometry.addAll(biometryForm.getBiometry()
 				.stream().map(bio -> new Biometry(bio, this)).collect(Collectors.toList()));
@@ -102,5 +109,9 @@ public class Card {
 	
 	public void addTravel(Travel travel) {
 		this.travels.add(travel);
+	}
+	
+	public void connectWallet(Wallet wallet) {
+		this.wallet.add(wallet);
 	}
 }

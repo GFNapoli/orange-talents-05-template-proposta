@@ -16,10 +16,14 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.zup.proposta.card.entity.Card;
 import br.com.zup.proposta.card.form.BiometryForm;
 import br.com.zup.proposta.card.form.TravelForm;
+import br.com.zup.proposta.card.form.WalletFrom;
 import br.com.zup.proposta.card.repository.CardRepository;
 import br.com.zup.proposta.client.ApiCards;
 import br.com.zup.proposta.client.dto.CartaoResouceInDto;
+import br.com.zup.proposta.client.dto.CarteirasLegadoDto;
 import br.com.zup.proposta.client.dto.TravelOutDto;
+import br.com.zup.proposta.client.dto.WalletInDto;
+import br.com.zup.proposta.client.dto.WalletOutDto;
 import br.com.zup.proposta.client.dto.BlockingDto;
 import br.com.zup.proposta.exception.ProposalRequestException;
 import feign.FeignException;
@@ -84,7 +88,7 @@ public class CardController {
 	public ResponseEntity<?> tripNotice(@PathVariable String cardNumber, @RequestBody @Valid TravelForm form, HttpServletRequest request){
 		
 		Card card = repository.findByCardNumber(cardNumber).orElseThrow(
-				() -> new ProposalRequestException("Cartão não cadastrado!", HttpStatus.BAD_REQUEST));
+				() -> new ProposalRequestException("Cartão não cadastrado!", HttpStatus.NOT_FOUND));
 		
 		TravelOutDto travelOut = new TravelOutDto(form.getDestiny(), form.getEndOfTrip());
 		CartaoResouceInDto cartaoResourece;
@@ -105,6 +109,40 @@ public class CardController {
 		
 		card.addTravel(form.toModel(ip, user, card));
 		repository.save(card);
+		return ResponseEntity.ok().build();
+	}
+	
+	@PostMapping("/wallet/{cardNumber}")
+	public ResponseEntity<?> conectWallet(@PathVariable String cardNumber, @RequestBody @Valid WalletFrom form){
+		
+		Card card = repository.findByCardNumber(cardNumber).orElseThrow(
+				() -> new ProposalRequestException("Cartão não cadastrado!", HttpStatus.NOT_FOUND));
+		
+		CarteirasLegadoDto carteirasLegado;
+		try {
+			carteirasLegado = apiCards.getWallets(cardNumber);
+		} catch (FeignException e) {
+			throw new ProposalRequestException(e.getMessage(), HttpStatus.BAD_GATEWAY);
+		}
+		
+		carteirasLegado.getCarteiras().forEach(wallet -> {
+			if(wallet.getEmissor().equalsIgnoreCase("PAYPAL")) {
+				throw new ProposalRequestException("Carteira já associada", HttpStatus.UNPROCESSABLE_ENTITY);
+			}
+		});
+		
+		WalletInDto walletIn;
+		WalletOutDto walletOut = new WalletOutDto(form.getEmail(), "PAYPAL");
+		
+		try {
+			walletIn = apiCards.connectWallet(cardNumber, walletOut);
+		} catch (FeignException e) {
+			throw new ProposalRequestException(e.getMessage(), HttpStatus.BAD_GATEWAY);
+		}
+		
+		card.connectWallet(form.toModel(walletIn.getId(), card, "PAYPAL"));
+		repository.save(card);
+		
 		return ResponseEntity.ok().build();
 	}
 }
