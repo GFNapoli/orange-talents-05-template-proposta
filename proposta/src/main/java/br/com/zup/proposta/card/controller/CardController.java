@@ -112,8 +112,13 @@ public class CardController {
 		return ResponseEntity.ok().build();
 	}
 	
-	@PostMapping("/wallet/{cardNumber}")
-	public ResponseEntity<?> conectWallet(@PathVariable String cardNumber, @RequestBody @Valid WalletFrom form){
+	@PostMapping("/wallet/{cardNumber}/a={empresa}")
+	public ResponseEntity<?> conectWallet(@PathVariable String cardNumber, @PathVariable final String empresa, @RequestBody @Valid WalletFrom form){
+		
+		System.out.println(empresa);
+		if(!(empresa.equalsIgnoreCase("PAYPAL") || empresa.equalsIgnoreCase("SANSUNGPAY"))) {
+			throw new ProposalRequestException("Associação invalida, empresa não disponivel", HttpStatus.BAD_REQUEST);
+		}
 		
 		Card card = repository.findByCardNumber(cardNumber).orElseThrow(
 				() -> new ProposalRequestException("Cartão não cadastrado!", HttpStatus.NOT_FOUND));
@@ -126,13 +131,13 @@ public class CardController {
 		}
 		
 		carteirasLegado.getCarteiras().forEach(wallet -> {
-			if(wallet.getEmissor().equalsIgnoreCase("PAYPAL")) {
+			if(wallet.getEmissor().equalsIgnoreCase(empresa)) {
 				throw new ProposalRequestException("Carteira já associada", HttpStatus.UNPROCESSABLE_ENTITY);
 			}
 		});
 		
 		WalletInDto walletIn;
-		WalletOutDto walletOut = new WalletOutDto(form.getEmail(), "PAYPAL");
+		WalletOutDto walletOut = new WalletOutDto(form.getEmail(), empresa.toUpperCase());
 		
 		try {
 			walletIn = apiCards.connectWallet(cardNumber, walletOut);
@@ -140,7 +145,7 @@ public class CardController {
 			throw new ProposalRequestException(e.getMessage(), HttpStatus.BAD_GATEWAY);
 		}
 		
-		card.connectWallet(form.toModel(walletIn.getId(), card, "PAYPAL"));
+		card.connectWallet(form.toModel(walletIn.getId(), card, empresa.toUpperCase()));
 		repository.save(card);
 		
 		return ResponseEntity.ok().build();
