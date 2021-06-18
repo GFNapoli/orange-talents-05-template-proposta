@@ -38,9 +38,6 @@ public class CardController {
 	@Autowired
 	private ApiCards apiCards;
 	
-	//@Autowired
-	//private OAuth2User oauthUser;
-	
 	@PostMapping("/biometry/{cardNumber}")
 	@Transactional
 	public ResponseEntity<?> addBiometry(@PathVariable String cardNumber, @RequestBody @Valid BiometryForm biometry){

@@ -24,7 +24,7 @@ public class ProposalCards {
 	private ApiCards apiCards;
 	
 	@Scheduled(fixedDelayString = "${time.assync}")
-	private void proposalCards() {
+	protected void proposalCards() {
 		
 		List<Proposal> proposals = repository.findByStatusAndCard(StatusProposal.ELEGIVEL, null);
 		
