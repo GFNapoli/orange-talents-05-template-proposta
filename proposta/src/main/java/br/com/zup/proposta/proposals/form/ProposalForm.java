@@ -10,6 +10,7 @@ import com.sun.istack.NotNull;
 
 import br.com.zup.proposta.annotation.DocumentValidation;
 import br.com.zup.proposta.annotation.Unique;
+import br.com.zup.proposta.config.security.EncryptDocument;
 import br.com.zup.proposta.proposals.entity.Proposal;
 
 public class ProposalForm {
@@ -77,7 +78,8 @@ public class ProposalForm {
 	}
 
 	public Proposal toModel() {
-		return new Proposal(document, email, name, adress, salary);
+		EncryptDocument encrypt = new EncryptDocument(document);
+		return new Proposal(encrypt.getDocument(), email, name, adress, salary);
 	}
 	
 	
